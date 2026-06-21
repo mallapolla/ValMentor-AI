@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile — ValMentor AI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8 animate-fade-up">
+    <div>
+        <h1 class="font-heading font-bold text-3xl text-slate-100">Profile Settings</h1>
+        <p class="text-slate-400 text-sm">Edit your target role objectives, technical experience levels, and skills.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Profile Widget -->
+        <div class="p-6 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl glass-card flex flex-col items-center justify-center space-y-4">
+            {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="Avatar" class="h-24 w-24 rounded-full border border-slate-700 object-cover shadow-xl">
+            {% else %}
+                <div class="h-24 w-24 rounded-full bg-gradient-to-tr from-brand-blue to-brand-purple flex items-center justify-center font-bold text-4xl text-white shadow-xl">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+            {% endif %}
+            
+            <div class="text-center">
+                <h2 class="font-heading font-bold text-xl text-slate-200">{{ user.username }}</h2>
+                <p class="text-cyan-400 text-xs font-semibold tracking-wide uppercase mt-1">{{ profile.target_role }}</p>
+                <p class="text-slate-500 text-xs mt-1">{{ profile.experience_level }} level</p>
+            </div>
+            
+            <div class="w-full pt-4 border-t border-slate-900/60 flex items-center justify-around text-center">
+                <div>
+                    <span class="text-xl">🔥</span>
+                    <p class="text-xs text-slate-400 font-bold mt-0.5">{{ user_streak|default:0 }} Days</p>
+                </div>
+                <div>
+                    <span class="text-xl">🏆</span>
+                    <p class="text-xs text-slate-400 font-bold mt-0.5">Lvl {{ user_level|default:1 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Form Edit -->
+        <div class="md:col-span-2 p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl glass-card">
+            <form method="POST" enctype="multipart/form-data" class="space-y-5">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label for="id_current_role" class="text-xs font-semibold text-slate-300">Current Role</label>
+                        {{ form.current_role }}
+                    </div>
+                    <div class="space-y-1">
+                        <label for="id_target_role" class="text-xs font-semibold text-slate-300">Target Role</label>
+                        {{ form.target_role }}
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label for="id_experience_level" class="text-xs font-semibold text-slate-300">Experience Level</label>
+                        {{ form.experience_level }}
+                    </div>
+                    <div class="space-y-1">
+                        <label for="id_avatar" class="text-xs font-semibold text-slate-300">Avatar Image</label>
+                        <input type="file" name="avatar" id="id_avatar" 
+                               class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-300 text-xs focus:outline-none focus:border-cyan-500 transition">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="id_skills_raw" class="text-xs font-semibold text-slate-300">Skills (Comma-separated)</label>
+                    {{ form.skills_raw }}
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="id_interests_raw" class="text-xs font-semibold text-slate-300">Career Interests (Comma-separated)</label>
+                    {{ form.interests_raw }}
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="id_bio" class="text-xs font-semibold text-slate-300">Bio Description</label>
+                    {{ form.bio }}
+                </div>
+                
+                <button type="submit" 
+                        class="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/10 transition transform hover:-translate-y-0.5">
+                    Save Profile Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Career Mentor — ValMentor AI{% endblock %}
+
+{% block content %}
+<div class="h-[calc(100vh-8rem)] flex flex-col md:flex-row gap-6 animate-fade-up">
+    <!-- Sidebar Conversation Threads List -->
+    <div class="w-full md:w-64 border border-slate-900 bg-slate-950/40 rounded-2xl p-4 flex flex-col justify-between glass-card">
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400 tracking-wide uppercase">Conversations</span>
+                <a href="{% url 'chat:new_conversation' %}?category=Career" 
+                   class="px-2 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
+                    + New
+                </a>
+            </div>
+            
+            <div class="space-y-1.5 overflow-y-auto max-h-[calc(100vh-22rem)]">
+                {% for conv in conversations %}
+                    <a href="?c={{ conv.id }}" 
+                       class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-left {% if active_conversation.id == conv.id %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:bg-slate-900 hover:text-slate-200{% endif %}">
+                        <div class="truncate font-semibold">{{ conv.title }}</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">{{ conv.updated_at|date:"M d, Y" }}</div>
+                    </a>
+                {% empty %}
+                    <div class="text-xs text-slate-600 text-center py-8">No previous chats. Start one now!</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Category creation shortcuts -->
+        <div class="border-t border-slate-900/60 pt-4 space-y-2">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Mentor Categories</span>
+            <div class="grid grid-cols-2 gap-1.5 text-center">
+                <a href="{% url 'chat:new_conversation' %}?category=Python" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-[10px] text-slate-300">🐍 Python</a>
+                <a href="{% url 'chat:new_conversation' %}?category=Django" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-[10px] text-slate-300">🦄 Django</a>
+                <a href="{% url 'chat:new_conversation' %}?category=Databases" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-[10px] text-slate-300">🗄️ SQL</a>
+                <a href="{% url 'chat:new_conversation' %}?category=AI" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-[10px] text-slate-300">🤖 AI Eng</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Messenger Pane -->
+    <div class="flex-1 border border-slate-900 bg-slate-950/40 rounded-2xl p-4 flex flex-col justify-between glass-card relative">
+        {% if active_conversation %}
+            <!-- Chat Feed -->
+            <div id="chat-messages-container" class="flex-1 overflow-y-auto space-y-4 pr-2 max-h-[calc(100vh-18rem)] mb-4">
+                {% for msg in messages_list %}
+                    <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                        <div class="max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed {% if msg.role == 'user' %}chat-bubble-user text-white{% else %}chat-bubble-assistant text-slate-200 border border-slate-800{% endif %}">
+                            {{ msg.content|linebreaksbr }}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="h-full flex flex-col items-center justify-center text-center space-y-4 pt-12">
+                        <span class="text-4xl">🤖</span>
+                        <div class="space-y-1">
+                            <h3 class="font-heading font-bold text-lg text-slate-200">Start Career Mentoring</h3>
+                            <p class="text-xs text-slate-500 max-w-sm">Ask about technical architectures, study planners, mock evaluations, and system models.</p>
+                        </div>
+                        
+                        <!-- Suggestion box -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg pt-4 text-left">
+                            {% for suggestion in suggested_prompts %}
+                            <button onclick="document.getElementById('chat-query-input').value = '{{ suggestion }}'; document.getElementById('chat-query-input').focus();"
+                                    class="p-3 bg-slate-900/60 hover:bg-slate-800 border border-slate-800/80 rounded-xl text-xs text-slate-400 hover:text-slate-200 transition text-left">
+                                {{ suggestion }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                <!-- Typing/Grading Indicator -->
+                <div id="chat-typing-indicator" class="flex justify-start hidden">
+                    <div class="max-w-[80%] rounded-xl px-4 py-3 bg-slate-900/50 border border-slate-800/80 text-slate-400 text-xs flex items-center space-x-2">
+                        <div class="flex space-x-1">
+                            <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                        </div>
+                        <span>ValMentor AI is compiling context & generating answer...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Form panel -->
+            <form id="chat-query-form" 
+                  hx-post="{% url 'chat:send_message' active_conversation.id %}" 
+                  hx-target="#chat-typing-indicator" 
+                  hx-swap="beforebegin"
+                  class="flex items-center space-x-2 border-t border-slate-900/60 pt-4">
+                <input type="text" name="message" id="chat-query-input" required autocomplete="off"
+                       class="flex-1 bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-3.5 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 placeholder-slate-500 transition"
+                       placeholder="Ask about careers, roadmaps, technical systems, or interview questions...">
+                <button type="submit" 
+                        class="px-5 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/10 transition">
+                    Send
+                </button>
+            </form>
+        {% else %}
+            <div class="h-full flex flex-col items-center justify-center text-center space-y-4">
+                <span class="text-4xl">💬</span>
+                <h3 class="font-heading font-bold text-xl text-slate-200">No Active Chat Session</h3>
+                <p class="text-sm text-slate-500 max-w-sm">Create a new career mentoring thread to begin coaching guides.</p>
+                <a href="{% url 'chat:new_conversation' %}?category=Career" 
+                   class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-sm shadow-lg transition">
+                    Start Chat Session
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/chat.js"></script>
+{% endblock %}

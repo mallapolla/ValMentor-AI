@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Login — ValMentor AI{% endblock %}
+
+{% block public_content %}
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-2xl glass-card space-y-6">
+        <div class="text-center space-y-2">
+            <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-brand-blue to-brand-purple flex items-center justify-center font-bold text-xl text-white mx-auto">V</div>
+            <h2 class="font-heading font-bold text-2xl text-slate-100">Welcome Back</h2>
+            <p class="text-slate-400 text-sm">Sign in to resume your career mock prep.</p>
+        </div>
+        
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="space-y-1">
+                <label for="email" class="text-xs font-semibold text-slate-300">Email Address</label>
+                <input type="email" name="email" id="email" required
+                       class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 placeholder-slate-600 transition"
+                       placeholder="you@example.com">
+            </div>
+            
+            <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                    <label for="password" class="text-xs font-semibold text-slate-300">Password</label>
+                    <a href="{% url 'accounts:forgot_password' %}" class="text-xs text-cyan-400 hover:text-cyan-300 transition">Forgot?</a>
+                </div>
+                <input type="password" name="password" id="password" required
+                       class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 placeholder-slate-600 transition"
+                       placeholder="••••••••">
+            </div>
+            
+            <button type="submit" 
+                    class="w-full py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/10 transition transform hover:-translate-y-0.5">
+                Sign In
+            </button>
+        </form>
+        
+        <div class="text-center text-xs text-slate-500">
+            <span>New to ValMentor? </span>
+            <a href="{% url 'accounts:register' %}" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Create an Account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

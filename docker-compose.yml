@@ -1,0 +1,143 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL Database ──────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: valmentor_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-valmentor}
+      POSTGRES_USER: ${POSTGRES_USER:-valmentor_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-valmentor_secret_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - valmentor_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-valmentor_user} -d ${POSTGRES_DB:-valmentor}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Valkey (Redis-compatible) ────────────────────────────
+  valkey:
+    image: valkey/valkey:8-alpine
+    container_name: valmentor_valkey
+    restart: unless-stopped
+    command: valkey-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - valkey_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - valmentor_network
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Django Application ───────────────────────────────────
+  django:
+    build:
+      context: .
+      dockerfile: docker/django/Dockerfile
+    container_name: valmentor_django
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120"
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - valmentor_network
+
+  # ── Celery Worker ────────────────────────────────────────
+  celery_worker:
+    build:
+      context: .
+      dockerfile: docker/django/Dockerfile
+    container_name: valmentor_celery_worker
+    restart: unless-stopped
+    command: celery -A config.celery worker --loglevel=info --concurrency=4
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    volumes:
+      - .:/app
+      - media_volume:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - valmentor_network
+
+  # ── Celery Beat (Scheduler) ─────────────────────────────
+  celery_beat:
+    build:
+      context: .
+      dockerfile: docker/django/Dockerfile
+    container_name: valmentor_celery_beat
+    restart: unless-stopped
+    command: celery -A config.celery beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - valmentor_network
+
+  # ── Nginx Reverse Proxy ─────────────────────────────────
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: valmentor_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - django
+    networks:
+      - valmentor_network
+
+volumes:
+  postgres_data:
+  valkey_data:
+  static_volume:
+  media_volume:
+
+networks:
+  valmentor_network:
+    driver: bridge

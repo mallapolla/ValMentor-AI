@@ -1,0 +1,13 @@
+<!-- User query message -->
+<div class="flex justify-end animate-fade-up">
+    <div class="max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed chat-bubble-user text-white">
+        {{ user_message.content|linebreaksbr }}
+    </div>
+</div>
+
+<!-- Assistant agent response -->
+<div class="flex justify-start animate-fade-up" style="animation-delay: 0.1s">
+    <div class="max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed chat-bubble-assistant text-slate-200 border border-slate-800">
+        {{ assistant_message.content|linebreaksbr }}
+    </div>
+</div>

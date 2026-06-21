@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}ValMentor AI — AI Career & Interview Mentor for Software Engineers{% endblock %}
+
+{% block public_content %}
+<!-- Header / Navbar -->
+<header class="w-full px-6 py-4 flex items-center justify-between border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-30">
+    <div class="flex items-center space-x-2">
+        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-brand-blue to-brand-purple flex items-center justify-center font-bold text-lg text-white">V</div>
+        <span class="font-heading font-bold text-xl tracking-tight bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">ValMentor <span class="text-brand-cyan">AI</span></span>
+    </div>
+    <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-300">
+        <a href="#features" class="hover:text-cyan-400 transition">Features</a>
+        <a href="#pricing" class="hover:text-cyan-400 transition">Pricing</a>
+        <a href="{% url 'accounts:login' %}" class="hover:text-cyan-400 transition">Login</a>
+    </nav>
+    <div>
+        <a href="{% url 'accounts:register' %}" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-purple hover:from-blue-600 hover:to-purple-700 text-sm font-semibold text-white shadow-lg transition transform hover:-translate-y-0.5">Start Free</a>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section class="relative px-6 py-20 md:py-32 flex flex-col items-center justify-center text-center overflow-hidden">
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-brand-blue/20 to-transparent blur-[120px] pointer-events-none"></div>
+    
+    <div class="max-w-4xl mx-auto space-y-6 z-10">
+        <span class="px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-400 text-xs font-bold tracking-wide uppercase inline-block">Powered by Valkey Memory & AI Agents</span>
+        <h1 class="font-heading font-extrabold text-4xl md:text-7xl leading-tight tracking-tight bg-gradient-to-b from-slate-50 to-slate-300 bg-clip-text text-transparent">
+            Your AI Career Mentor<br>Powered by <span class="bg-gradient-to-r from-cyan-400 to-brand-purple bg-clip-text text-transparent">Valkey Memory</span>
+        </h1>
+        <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+            Personalized career guidance, mock interviews with AI grading, and smart learning roadmaps. Backed by long-term Breeth memory logs and short-term sessions.
+        </p>
+        <div class="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'accounts:register' %}" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-base shadow-lg shadow-cyan-500/20 transition transform hover:-translate-y-0.5 text-center">Start Free Now</a>
+            <a href="#features" class="w-full sm:w-auto px-8 py-4 rounded-xl border border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-slate-300 font-semibold text-base transition text-center">Watch Demo</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section id="features" class="px-6 py-20 max-w-7xl mx-auto space-y-16">
+    <div class="text-center space-y-3">
+        <h2 class="font-heading font-bold text-3xl md:text-5xl text-slate-100">Supercharged Core Capabilities</h2>
+        <p class="text-slate-400 max-w-xl mx-auto text-sm md:text-base">Everything you need to advance your engineering career from mock code reviews to real-time leaderboards.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl space-y-4 hover:border-slate-800 transition">
+            <div class="h-12 w-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xl">💬</div>
+            <h3 class="font-heading font-bold text-xl text-slate-100">AI Career Mentor</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">Chat with an expert software coach that retains memory of your career targets, target skill level, and weaknesses.</p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl space-y-4 hover:border-slate-800 transition">
+            <div class="h-12 w-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xl">🎯</div>
+            <h3 class="font-heading font-bold text-xl text-slate-100">Interactive Interviews</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">Conduct mock technical coding and system design interviews, evaluated with AI scores stored in Valkey leaderboards.</p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl space-y-4 hover:border-slate-800 transition">
+            <div class="h-12 w-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-xl">🗺️</div>
+            <h3 class="font-heading font-bold text-xl text-slate-100">Dynamic Roadmaps</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">Plan customized software learning paths tailored automatically by AI to build your missing technical skills.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="px-6 py-20 max-w-7xl mx-auto space-y-16">
+    <div class="text-center space-y-3">
+        <h2 class="font-heading font-bold text-3xl md:text-5xl text-slate-100">Simple, Transparent Pricing</h2>
+        <p class="text-slate-400 max-w-xl mx-auto">Get started for free or upgrade to receive unlimited AI mock reviews and advanced coaching.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-8">
+        <!-- Plan 1 -->
+        <div class="p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl space-y-6 flex flex-col justify-between">
+            <div class="space-y-4">
+                <h3 class="font-heading font-bold text-2xl text-slate-200">Free Tier</h3>
+                <p class="text-slate-400 text-sm">Perfect for exploration and basic interview checks.</p>
+                <div class="text-4xl font-heading font-extrabold text-slate-100">$0 <span class="text-sm font-normal text-slate-500">/ forever</span></div>
+                <ul class="space-y-3 text-sm text-slate-400">
+                    <li>✓ 2 AI Chat sessions per day</li>
+                    <li>✓ 1 Mock Interview session</li>
+                    <li>✓ Standard learning roadmaps</li>
+                    <li>✓ Basic ATS resume checks</li>
+                </ul>
+            </div>
+            <a href="{% url 'accounts:register' %}" class="w-full py-3 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center font-bold text-sm text-slate-300 block transition">Sign Up Free</a>
+        </div>
+        <!-- Plan 2 -->
+        <div class="p-8 rounded-2xl border border-cyan-500/20 bg-slate-950/80 shadow-2xl space-y-6 flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute top-0 right-0 px-4 py-1.5 bg-gradient-to-r from-cyan-500 to-brand-blue text-xs font-bold text-slate-950 rounded-bl-xl uppercase">Best Value</div>
+            <div class="space-y-4">
+                <h3 class="font-heading font-bold text-2xl text-cyan-400">Premium Pro</h3>
+                <p class="text-slate-400 text-sm">For engineers serious about landing top tech offers.</p>
+                <div class="text-4xl font-heading font-extrabold text-slate-100">$29 <span class="text-sm font-normal text-slate-500">/ month</span></div>
+                <ul class="space-y-3 text-sm text-slate-300">
+                    <li>✓ Unlimited AI chat memory sessions</li>
+                    <li>✓ Unlimited graded mock interviews</li>
+                    <li>✓ Custom learning roadmaps</li>
+                    <li>✓ Direct resume missing skill reports</li>
+                    <li>✓ High priority support and features</li>
+                </ul>
+            </div>
+            <a href="{% url 'accounts:register' %}" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-brand-blue hover:opacity-90 text-center font-bold text-sm text-slate-950 block transition shadow-lg shadow-cyan-500/10">Upgrade to Pro</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="w-full px-6 py-12 border-t border-slate-900 bg-slate-950/40 text-center text-slate-500 text-xs md:text-sm space-y-4">
+    <p>&copy; 2026 ValMentor AI. Build your dream software engineering career with Valkey and Strands Agents.</p>
+</footer>
+{% endblock %}

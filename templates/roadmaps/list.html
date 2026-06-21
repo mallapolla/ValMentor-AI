@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Study Roadmaps — ValMentor AI{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-fade-up">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="font-heading font-bold text-3xl text-slate-100">Intelligent Study Roadmaps</h1>
+            <p class="text-slate-400 text-sm font-light">Structure your learning modules to target top-tier software roles.</p>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- AI Custom generator -->
+        <div class="p-6 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl glass-card flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+                <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded-full">AI Roadmap Builder</span>
+                <h2 class="font-heading font-bold text-xl text-slate-200">Custom Planner</h2>
+                <p class="text-slate-400 text-xs leading-relaxed">Enter your dream software engineering target position and tech level. Our Roadmap Agent will formulate custom milestones, study lists, and reference goals.</p>
+            </div>
+            
+            <form method="POST" action="{% url 'roadmaps:generate' %}" class="space-y-4">
+                {% csrf_token %}
+                <div class="space-y-1">
+                    <label for="target_role" class="text-xs font-semibold text-slate-400">Dream Job Position</label>
+                    <input type="text" name="target_role" id="target_role" required
+                           class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-cyan-500 placeholder-slate-700 transition"
+                           placeholder="e.g. Django Expert, Valkey Core Developer">
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="experience" class="text-xs font-semibold text-slate-400">Current Experience</label>
+                    <select name="experience" id="experience" 
+                            class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-300 text-xs focus:outline-none focus:border-cyan-500 transition">
+                        <option value="junior">Junior Developer</option>
+                        <option value="mid" selected>Mid-Level Developer</option>
+                        <option value="senior">Senior Engineer</option>
+                    </select>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-blue to-brand-purple text-white font-bold text-xs shadow-lg transition">
+                    Generate Custom Roadmap
+                </button>
+            </form>
+        </div>
+        
+        <!-- Enrolled and Predefined List -->
+        <div class="md:col-span-2 space-y-8">
+            <!-- Active roadmaps -->
+            <div class="space-y-4">
+                <h2 class="font-heading font-bold text-lg text-slate-200">Active Study Programs</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for rm in user_roadmaps %}
+                        <div class="p-5 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-lg flex flex-col justify-between space-y-4 hover:border-slate-800 transition">
+                            <div class="space-y-1">
+                                <h3 class="font-heading font-semibold text-base text-slate-200">{{ rm.roadmap.title }}</h3>
+                                <p class="text-slate-500 text-xs">{{ rm.roadmap.difficulty }} Level • {{ rm.roadmap.estimated_weeks }} Weeks</p>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-400">
+                                    <span>Progress</span>
+                                    <span>{{ rm.progress_pct }}%</span>
+                                </div>
+                                <div class="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden">
+                                    <div class="h-full bg-cyan-400 rounded-full transition-all duration-300" style="width: {{ rm.progress_pct }}%"></div>
+                                </div>
+                            </div>
+                            
+                            <a href="{% url 'roadmaps:detail' rm.roadmap.slug %}" 
+                               class="text-center w-full py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
+                                Continue Study
+                            </a>
+                        </div>
+                    {% empty %}
+                        <div class="sm:col-span-2 p-8 text-center text-slate-500 font-light border border-dashed border-slate-800 rounded-2xl">
+                            You are not enrolled in any study program. Enroll below or create a custom path!
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Predefined Available roadmaps -->
+            <div class="space-y-4">
+                <h2 class="font-heading font-bold text-lg text-slate-200">Available Predefined Pathways</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for rm in available_roadmaps %}
+                        <div class="p-5 rounded-2xl border border-slate-900 bg-slate-950/40 shadow flex flex-col justify-between space-y-4 hover:border-slate-850 transition">
+                            <div class="space-y-2">
+                                <h3 class="font-heading font-semibold text-base text-slate-200">{{ rm.title }}</h3>
+                                <p class="text-slate-400 text-xs leading-relaxed line-clamp-2">{{ rm.description }}</p>
+                                <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-850 text-[10px] text-slate-400 inline-block">{{ rm.difficulty }} Level</span>
+                            </div>
+                            
+                            <a href="{% url 'roadmaps:enroll' rm.id %}" 
+                               class="text-center w-full py-2 bg-cyan-500 hover:bg-cyan-600 rounded-xl text-xs font-semibold text-slate-950 transition">
+                                Enroll in Pathway
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

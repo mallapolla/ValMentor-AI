@@ -1,0 +1,8 @@
+from django.urls import path
+from . import views
+
+app_name = 'gamification'
+
+urlpatterns = [
+    path('leaderboard/', views.leaderboard_view, name='leaderboard'),
+]

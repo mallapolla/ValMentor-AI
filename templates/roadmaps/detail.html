@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ roadmap.title }} — ValMentor AI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8 animate-fade-up">
+    <!-- Header panel -->
+    <div class="p-8 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl glass-card relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div class="space-y-2">
+            <span class="px-2.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] font-bold text-cyan-400 uppercase tracking-wide">Course Path</span>
+            <h1 class="font-heading font-extrabold text-2xl md:text-3xl text-slate-100">{{ roadmap.title }}</h1>
+            <p class="text-slate-400 text-xs md:text-sm max-w-xl leading-relaxed">{{ roadmap.description }}</p>
+        </div>
+        
+        <div class="min-w-[10rem] flex flex-col justify-center text-center sm:border-l border-slate-900 sm:pl-8">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Milestones Progress</span>
+            <div id="roadmap-progress-text" class="text-3xl font-heading font-bold text-cyan-400 mt-1">
+                {{ user_roadmap.progress_pct|default:0 }}% Completed
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-950 mt-2 overflow-hidden">
+                <div id="roadmap-progress-fill" class="h-full bg-cyan-400 rounded-full transition-all duration-300" 
+                     style="width: {{ user_roadmap.progress_pct|default:0 }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Milestones Tree List -->
+    <div class="space-y-6">
+        <h2 class="font-heading font-bold text-xl text-slate-200">Roadmap Milestones Hierarchy</h2>
+        
+        <div class="space-y-4 relative before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-900">
+            {% for ms in roadmap.milestones %}
+                <div class="flex items-start space-x-6 relative pl-4">
+                    <!-- Dot Indicator -->
+                    <div class="h-4 w-4 rounded-full border-2 border-cyan-400 bg-slate-950 relative z-10 mt-1.5 -ml-1"></div>
+                    
+                    <div class="flex-1 p-6 rounded-2xl border border-slate-900 bg-slate-950/40 space-y-4 hover:border-slate-850 transition">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div>
+                                <h3 class="font-heading font-semibold text-slate-200">Milestone {{ forloop.counter }}: {{ ms.title }}</h3>
+                                <p class="text-slate-400 text-xs mt-1 leading-relaxed">{{ ms.description }}</p>
+                            </div>
+                            
+                            <!-- Toggle Completion -->
+                            {% if user_roadmap %}
+                                <div id="milestone-{{ forloop.counter }}-status" class="flex items-center space-x-3">
+                                    {% if forloop.counter in user_roadmap.completed_milestones %}
+                                        <span class="text-sm font-semibold text-emerald-400">Completed</span>
+                                        <button hx-get="{% url 'roadmaps:complete_milestone' user_roadmap.id forloop.counter %}?action=revert" 
+                                                hx-target="#milestone-{{ forloop.counter }}-status" 
+                                                hx-swap="outerHTML" 
+                                                class="px-3 py-1 text-xs rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200">
+                                            Undo
+                                        </button>
+                                    {% else %}
+                                        <span class="text-sm font-semibold text-slate-400">Pending</span>
+                                        <button hx-get="{% url 'roadmaps:complete_milestone' user_roadmap.id forloop.counter %}?action=complete" 
+                                                hx-target="#milestone-{{ forloop.counter }}-status" 
+                                                hx-swap="outerHTML" 
+                                                class="px-3 py-1 text-xs rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200">
+                                            Mark Complete
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Topics checklist -->
+                        <div class="space-y-1.5 border-t border-slate-900/60 pt-3">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Core Study Topics</span>
+                            <div class="flex flex-wrap gap-2 pt-1.5">
+                                {% for topic in ms.topics %}
+                                    <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-850 text-xs text-slate-400 font-mono">
+                                        {{ topic }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

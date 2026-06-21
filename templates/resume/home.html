@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ATS Resume Optimizer — ValMentor AI{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8 animate-fade-up">
+    <!-- Header -->
+    <div>
+        <h1 class="font-heading font-bold text-3xl text-slate-100">ATS Resume Analyzer</h1>
+        <p class="text-slate-400 text-sm">Optimize your CV/resume keywords for high ATS parser match values.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- PDF Uploader Widget -->
+        <div class="p-6 rounded-2xl border border-slate-900 bg-slate-950/60 shadow-xl glass-card flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+                <h2 class="font-heading font-bold text-xl text-slate-200">Upload Resume PDF</h2>
+                <p class="text-slate-400 text-xs leading-relaxed">Our optimizer agent extracts core text from your resume PDF, maps it against targets, grades keyword strength, and highlights missing technological skills.</p>
+                <div class="mt-2 p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/20 flex items-center justify-between">
+                    <span class="text-slate-300 text-xs">Need a sample CV?</span>
+                    <a href="{% static 'dummy_resume.pdf' %}" download="ValMentor_Sample_Resume.pdf" class="text-cyan-400 font-bold hover:underline text-xs flex items-center">
+                        <span class="mr-1">⬇️</span> Download Sample
+                    </a>
+                </div>
+            </div>
+
+            
+            <form method="POST" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <div class="p-6 border border-dashed border-slate-800 hover:border-cyan-500/40 rounded-2xl flex flex-col items-center justify-center space-y-3 cursor-pointer transition">
+                    <span class="text-3xl">📄</span>
+                    <input type="file" name="resume_file" id="resume_file" accept=".pdf" required
+                           class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-slate-900 file:text-cyan-400 hover:file:bg-slate-850 cursor-pointer">
+                </div>
+                
+                <button type="submit" 
+                        class="w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/10 transition">
+                    Start AI Resume Check
+                </button>
+            </form>
+        </div>
+        
+        <!-- Results and uploads -->
+        <div class="md:col-span-2 space-y-6">
+            <h2 class="font-heading font-bold text-xl text-slate-200">Analysis Results Summary</h2>
+            
+            {% if resumes.exists %}
+                <!-- Check if the most recent resume is analyzing -->
+                {% with recent_resume=resumes.first %}
+                    <div id="active-resume-card">
+                        {% if recent_resume.status == 'pending' or recent_resume.status == 'processing' %}
+                            <!-- HTMX polling status -->
+                            <div hx-get="{% url 'resume:status' recent_resume.id %}" 
+                                 hx-trigger="load" 
+                                 hx-swap="outerHTML">
+                            </div>
+                        {% else %}
+                            {% include 'resume/partials/results_card.html' with resume=recent_resume %}
+                        {% endif %}
+                    </div>
+                {% endwith %}
+                
+                <!-- History elements -->
+                <div class="p-6 rounded-2xl border border-slate-900 bg-slate-950/60 shadow glass-card">
+                    <h3 class="font-heading font-bold text-base text-slate-300 mb-4">Past Upload History</h3>
+                    <div class="space-y-3">
+                        {% for r in resumes %}
+                            <div class="flex items-center justify-between p-3.5 bg-slate-900/40 rounded-xl text-xs text-slate-400 hover:border-slate-800 border border-transparent transition">
+                                <span class="font-medium truncate max-w-xs">{{ r.file.name }}</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="font-bold {% if r.ats_score >= 80 %}text-emerald-400{% elif r.ats_score >= 50 %}text-amber-400{% else %}text-red-400{% endif %}">
+                                        ATS Grade: {{ r.ats_score }}%
+                                    </span>
+                                    <span class="text-slate-500">{{ r.created_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="p-12 border border-dashed border-slate-900 bg-slate-950/40 rounded-2xl text-center text-slate-500 font-light leading-relaxed">
+                    No resumes analyzed yet. Upload your PDF to check missing keywords.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+<aside id="sidebar-panel" class="w-64 border-r border-slate-900 bg-slate-950/80 backdrop-blur-md flex flex-col justify-between h-screen sticky top-0 z-20 transition duration-300 transform -translate-x-full md:translate-x-0 absolute md:relative">
+    <div class="flex flex-col">
+        <!-- Logo Header -->
+        <div class="px-6 py-5 flex items-center justify-between border-b border-slate-900">
+            <a href="{% url 'dashboard:home' %}" class="flex items-center space-x-2.5">
+                <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-brand-blue to-brand-purple flex items-center justify-center font-bold text-lg text-white">V</div>
+                <span class="font-heading font-bold text-lg tracking-tight bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">ValMentor <span class="text-brand-cyan">AI</span></span>
+            </a>
+            <!-- Mobile Sidebar close toggle -->
+            <button id="sidebar-close-btn" class="md:hidden text-slate-400 hover:text-slate-100">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <!-- Navigation Routes -->
+        <nav class="p-4 space-y-1.5 flex-1">
+            <a href="{% url 'dashboard:home' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900/60 hover:text-cyan-400 transition">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'chat:home' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900/60 hover:text-cyan-400 transition">
+                <span>💬</span>
+                <span>AI Career Mentor</span>
+            </a>
+            <a href="{% url 'interviews:home' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900/60 hover:text-cyan-400 transition">
+                <span>🎯</span>
+                <span>Grids & Interviews</span>
+            </a>
+            <a href="{% url 'roadmaps:list' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900/60 hover:text-cyan-400 transition">
+                <span>🗺️</span>
+                <span>Study Roadmaps</span>
+            </a>
+            <a href="{% url 'resume:home' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900/60 hover:text-cyan-400 transition">
+                <span>📄</span>
+                <span>ATS Resume Optimizer</span>
+            </a>
+            <a href="{% url 'gamification:leaderboard' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900/60 hover:text-cyan-400 transition">
+                <span>🏆</span>
+                <span>Leaderboards</span>
+            </a>
+        </nav>
+    </div>
+    
+    <!-- User Quick stats footer -->
+    <div class="p-4 border-t border-slate-900">
+        <a href="{% url 'accounts:profile' %}" class="flex items-center space-x-3 p-2 rounded-xl hover:bg-slate-900 transition">
+            <div class="h-9 w-9 rounded-full bg-slate-800 flex items-center justify-center font-bold text-sm text-cyan-400 border border-slate-700">👤</div>
+            <div class="flex flex-col text-xs">
+                <span class="font-bold text-slate-200">{{ user.username }}</span>
+                <span class="text-slate-500 font-light">{{ user_profile.experience_level|default:"Entry" }} Level</span>
+            </div>
+        </a>
+    </div>
+</aside>
